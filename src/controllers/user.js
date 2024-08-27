@@ -3,6 +3,7 @@ import { User } from "../models/user.js";
 import { comparePassword, hashPassword } from "../services/hash.password.js";
 import { hashTransactionPin } from "../services/transaction.pin.js";
 import mongoSanitize from "mongo-sanitize";
+import { compareTransactionPin } from "../services/transaction.pin.js";
 
 export const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -67,6 +68,31 @@ export const setTransactionPin = async (req, res) => {
     await user.save();
 
     res.status(200).json({ message: "Transaction PIN set successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateTransactionPin = async (req, res) => {
+  const { oldPin, newPin } = req.body;
+  const sanitizedOldPin = mongoSanitize(oldPin);
+  const sanitizedNewPin = mongoSanitize(newPin);
+
+  const user = await User.findById(req.user.id);
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const isMatch = await compareTransactionPin(
+    sanitizedOldPin,
+    user.transactionPIN
+  );
+
+  if (!isMatch) return res.status(401).json({ message: "Invalid PIN" });
+
+  try {
+    const hashedPIN = await hashTransactionPin(sanitizedNewPin);
+    user.transactionPIN = hashedPIN;
+    await user.save();
+    res.status(200).json({ message: "Transaction PIN updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
