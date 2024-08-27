@@ -60,3 +60,34 @@ export const makeDonation = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getDonations = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  try {
+    const donations = await Donation.find({ donor: req.user.id })
+      .populate("beneficiary", "name email")
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    res.status(200).json(donations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getDonation = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const donation = await Donation.findById(id).populate(
+      "beneficiary",
+      "name email"
+    );
+    if (!donation)
+      return res.status(404).json({ message: "Donation not found" });
+
+    res.status(200).json(donation);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
