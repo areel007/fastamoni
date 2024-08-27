@@ -130,6 +130,7 @@ The service is deployed on Render and can be consumed by any client.
    
   - Additional Security Measures
     - Utilized JWT for secure authentication.
+    - Utilized express validor to validate all inputs.
 
 <br />
 
