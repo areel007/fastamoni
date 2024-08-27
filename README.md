@@ -77,6 +77,8 @@ The service is deployed on Render and can be consumed by any client.
      - Response: `{ "token": "string", "_id": "string", "email": "string", "name": "string" }`
     
   - Transaction PIN Management
+
+    Set Transaction Pin
      
      - Endpoint: `POST /api/auth/set-transaction-pin`
      - Description: Allows a user to create or update a transaction PIN.
@@ -84,9 +86,17 @@ The service is deployed on Render and can be consumed by any client.
        { "pin": "string" }`
      - Response: `{ "message": "Transaction PIN set successfully" }`
    
+    Update Transaction Pin
+     
+     - Endpoint: `PATCH /api/auth/set-transaction-pin`
+     - Description: Allows a user to create or update a transaction PIN.
+     - Request body: `
+       { "oldPin": "string", "newPin": "string" }`
+     - Response: `{ "message": "Transaction PIN updated successfully" }`
+   
    - Donations
      
-     - Endpoint: `POST /api/make-donation`
+     - Endpoint: `POST /api/donations`
      - Description: Allows a user to create a donation to another user.
      - Request body: `
        { "beneficiaryId": "string", "amount": "number", "transactionPIN": "string" }`
@@ -94,17 +104,23 @@ The service is deployed on Render and can be consumed by any client.
     
   - Viewing Donations
      
-     - Endpoint: `GET /api/make-donation`
+     - Endpoint: `GET /api/donations`
      - Description: View all donations made by a particular user.
      - Query Parameters:
        - page: Page number for pagination, limit: Number of items per page
      - Response: `[{ "_id": "string", "donor": "string", "beneficiary": "string", "amount": "number", "createdAt": "Date", "updatedAt": "Date" }]`
    
-  - Single Donation
+  - Viewing Single Donation
 
-    - Endpoint: `GET /api/make-donation/:id`
+    - Endpoint: `GET /api/donations/:id`
      - Description: View a single donation made to a beneficiary.
      - Response: `{ "_id": "string", "donor": "string", "beneficiary": "object", "amount": "number", "createdAt": "Date", "updatedAt": "Date" }`
+
+- Viewing Donations within periods
+
+    - Endpoint: `GET /api/donations/date-range?page=1&limit=5`
+     - Description: View donations within periods.
+     - Response: `[{ "_id": "string", "donor": "string", "beneficiary": "object", "amount": "number", "createdAt": "Date", "updatedAt": "Date" }]`
    
   <br />
 
