@@ -91,3 +91,31 @@ export const getDonation = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getDonationsWithinPeriods = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const { startDate, endDate } = req.body;
+
+  // validate that start date and end date are provided
+  if (!startDate || !endDate) {
+    return res
+      .status(400)
+      .json({ message: "Please provide both startDate and endDate" });
+  }
+
+  try {
+    const donations = await Donation.find({
+      donor: req.user.id,
+      createdAt: {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      },
+    })
+      .populate("beneficiary", "name email")
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    res.status(200).json(donations);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

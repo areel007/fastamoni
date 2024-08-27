@@ -5,6 +5,6 @@ import donation from "./donation.js";
 const router = Router();
 
 router.use("/api/auth", user);
-router.use("/api/make-donation", donation);
+router.use("/api/donations", donation);
 
 export default router;
